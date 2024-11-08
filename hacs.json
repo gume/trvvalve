@@ -1,0 +1,7 @@
+{
+  "name": "TRV valve",
+  "hacs": "2.0.0",
+  "domains": ["valve"],
+  "iot_class": "Local Push",
+  "homeassistant": "2023.10.0"
+}

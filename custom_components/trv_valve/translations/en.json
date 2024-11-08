@@ -1,0 +1,31 @@
+{
+  "config": {
+    "step": {
+      "climate": {
+        "title": "TRV valve",
+        "description": "If you need help with the configuration have a look here: https://github.com/gume/trv-valve",
+        "data": {
+          "climate": "Climate entity",
+          "open temperature": "Open temperature",
+          "close temperature": "Close temperature",
+        }
+      }
+    },
+    "error": {
+      "something_went_wrong": "something went wrong."
+    },
+    "abort": {
+      "single_instance_allowed": "Only a single instance is allowed."
+    }
+  },
+  "options": {
+    "step": {
+      "climate": {
+        "data": {
+          "open temperature": "Open temperature",
+          "close temperature": "Close temperature"
+        }
+      }
+    }
+  }
+}

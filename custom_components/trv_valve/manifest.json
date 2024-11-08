@@ -1,0 +1,10 @@
+{
+  "domain": "trv_valve",
+  "name": "TRV valve helper",
+  "documentation": "https://github.com/gume/trv-valve",
+  "issue_tracker": "https://github.com/gume/trv-valve/issues",
+  "dependencies": [],
+  "config_flow": true,
+  "codeowners": ["@gume"],
+  "requirements": []
+}
