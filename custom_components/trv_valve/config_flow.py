@@ -1,7 +1,6 @@
 """Adds config flow for TRV valve."""
 import voluptuous as vol
 from homeassistant import config_entries
-from homeassistant.core import callback
 from homeassistant.helpers import config_validation as cv
 from homeassistant.data_entry_flow import section
 from homeassistant.helpers.selector import EntitySelector, EntitySelectorConfig, EntityFilterSelectorConfig
@@ -9,11 +8,12 @@ from homeassistant.helpers.selector import EntitySelector, EntitySelectorConfig,
 
 import logging
 
+from .const import CONF_NAME
 from .const import CONF_CLIMATE
 from .const import CONF_OPEN_TEMP
 from .const import CONF_CLOSE_TEMP
+
 from .const import DOMAIN
-from .const import PLATFORMS
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -39,13 +39,13 @@ class TrvValveFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             valid = await self._test_config(user_input[CONF_CLIMATE])
             if valid:
                 self.data = user_input.copy()
-                _LOGGER.error("D1. User input: %s", user_input)
                 return await self.async_step_options()
             else:
                 self._errors["base"] = "wrong"
 
         return self.async_show_form(
             step_id="user", data_schema=vol.Schema({
+                vol.Required(CONF_NAME): str,
                 vol.Required(CONF_CLIMATE): EntitySelector(
                     EntitySelectorConfig(
                         multiple = False,
@@ -63,9 +63,8 @@ class TrvValveFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
 
         if user_input is not None:
-            _LOGGER.error("D2. User input: %s", user_input)
             self.data.update(user_input)
-            return self.async_create_entry(title="TRV Valve", data=self.data)
+            return self.async_create_entry(title=self.data[CONF_NAME], data=self.data)
 
         return self.async_show_form(
             step_id="options",

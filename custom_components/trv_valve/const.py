@@ -1,3 +1,5 @@
+from homeassistant.const import Platform
+
 """Constants for TRV valve."""
 # Base component constants
 NAME = "TRV valve"
@@ -11,13 +13,11 @@ ISSUE_URL = "https://github.com/gume/trv-valve/issues"
 # Icons
 ICON = "mdi:valve"
 
-# Platforms
-VALVE = "valve"
-PLATFORMS = [VALVE]
-
+# Platform
+PLATFORMS = [ Platform.VALVE ]
 
 # Configuration and options
-CONF_CLIMATE = "trv"
+CONF_CLIMATE = "climate"
 CONF_NAME = "name"
 CONF_OPEN_TEMP = "temp_open"
 CONF_CLOSE_TEMP = "temp_close"
