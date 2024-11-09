@@ -1,8 +1,9 @@
 """Valve platform for TRV valve."""
-from homeassistant.core import HomeAssistant
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.components.valve import ValveEntity, ValveEntityFeature
 
 
@@ -16,6 +17,10 @@ from .const import VERSION
 from .const import MANUFACTURER
 
 from . import HubConfigEntry
+
+import logging
+_LOGGER = logging.getLogger(__name__)
+
 
 async def async_setup_entry(
     hass: HomeAssistant,
@@ -78,11 +83,10 @@ class TRVValve(ValveEntity):
         # Sensors should also register callbacks to HA when their state changes
         self._hub.register_callback(self.async_write_ha_state)
 
-        # Listen for state changes of the climate entity
-        self._hub._hass.bus.async_listen(
-            "state_changed", self._async_climate_state_changed
+        self._unsub_atsce = async_track_state_change_event(
+            self._hub._hass, self._hub._climate, self._async_climate_attribute_changed
         )
-
+        
         # Set initial state according to the climate entity
         climate_state = self._hub._hass.states.get(self._hub._climate)
         if climate_state:
@@ -95,20 +99,23 @@ class TRVValve(ValveEntity):
         # The opposite of async_added_to_hass. Remove any registered call backs here.
         self._hub.remove_callback(self.async_write_ha_state)
 
-        # Remove the listener for state changes of the climate entity
-        self._hub._hass.bus.async_remove_listener(
-            "state_changed", self._async_climate_state_changed
-        )
+        self._unsub_atsce()
 
-    async def _async_climate_state_changed(self, event):
-        """Handle climate state changes."""
+    @callback
+    async def _async_climate_attribute_changed(self, event) -> None:
+        """Handle climate state and attribute changes."""
         if event.data.get("entity_id") != self._hub._climate:
             return
 
         new_state = event.data.get("new_state")
-        if new_state:
-            self._attr_is_closed = new_state.state == "off"
-            self.schedule_update_ha_state()
+        if new_state is None:
+            return
+        hvac_action = new_state.attributes.get("hvac_action")
+
+        off = hvac_action == "off"
+        idle = hvac_action == "idle"
+        self._attr_is_closed = off or idle
+        self.schedule_update_ha_state()
 
     def __init__(self, hub) -> None:
         self._hub = hub
