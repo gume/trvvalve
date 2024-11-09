@@ -9,7 +9,7 @@ from homeassistant.core import HomeAssistant
 
 class Hub:
 
-    manufacturer = "Demonstration Corp"
+    manufacturer = "Gume"
 
     def __init__(self, hass: HomeAssistant, name: str, climate: str, ot: float, ct: float) -> None:
         """Init dummy hub."""
