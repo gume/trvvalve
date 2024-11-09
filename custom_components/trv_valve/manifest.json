@@ -1,11 +1,12 @@
 {
   "domain": "trv_valve",
-  "name": "TRV valve helper",
-  "documentation": "https://github.com/gume/trv-valve",
-  "issue_tracker": "https://github.com/gume/trv-valve/issues",
+  "name": "TRV Valve Helper",
+  "documentation": "https://github.com/gume/trvvalve",
+  "issue_tracker": "https://github.com/gume/trvvalve/issues",
   "dependencies": [],
   "config_flow": true,
   "codeowners": ["@gume"],
   "requirements": [],
-  "version": "0.0.1"
+  "version": "0.0.1",
+  "loggers": ["custom_components.trv_valve"]
 }
