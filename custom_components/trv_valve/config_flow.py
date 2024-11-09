@@ -70,8 +70,8 @@ class TrvValveFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             step_id="options",
             data_schema=vol.Schema(
                 {
-                    vol.Optional(CONF_OPEN_TEMP, default=40.0): vol.Coerce(float),
-                    vol.Optional(CONF_CLOSE_TEMP, default=5.0): vol.Coerce(float)
+                    vol.Optional(CONF_OPEN_TEMP, default=35.0): vol.Coerce(float),
+                    vol.Optional(CONF_CLOSE_TEMP, default=10.0): vol.Coerce(float)
                 }
             ),
             errors=errors
