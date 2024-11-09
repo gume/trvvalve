@@ -13,6 +13,7 @@ from .const import ATTRIBUTION
 from .const import DOMAIN
 from .const import NAME
 from .const import VERSION
+from .const import MANUFACTURER
 
 from . import HubConfigEntry
 
@@ -32,12 +33,31 @@ CONF_OPEN_TEMP = "open_temperature"
 CONF_CLOSE_TEMP = "close_temperature"
 
 
-class TRVValveEntity(Entity):
+class TRVValve(ValveEntity):
 
     should_poll = False
+    supported_features = ValveEntityFeature.OPEN | ValveEntityFeature.CLOSE
+    reports_position = False
 
-    def __init__(self, hub):
-        self._hub = hub
+    async def async_open_valve(self) -> None:
+        climate_state = self._hub._hass.states.get(self._hub._climate)
+        if climate_state is not None and "manual" in climate_state.attributes.get("preset_modes", []):
+            await self._hub._hass.services.async_call("climate", "set_preset_mode", {"entity_id": self._hub._climate, "preset_mode": "manual"})
+        await self._hub._hass.services.async_call("climate", "set_temperature", {"entity_id": self._hub._climate, "temperature": self._hub._open_temp})
+        await self._hub._hass.services.async_call("climate", "turn_on", {"entity_id": self._hub._climate})
+        self.__attr_is_closed = False
+        self._attr_icon = "mdi:valve-open"
+        self.schedule_update_ha_state()
+
+    async def async_close_valve(self) -> None:
+        climate_state = self._hub._hass.states.get(self._hub._climate)
+        if climate_state is not None and "manual" in climate_state.attributes.get("preset_modes", []):
+            await self._hub._hass.services.async_call("climate", "set_preset_mode", {"entity_id": self._climate, "preset_mode": "manual"})
+        await self._hub._hass.services.async_call("climate", "set_temperature", {"entity_id": self._hub._climate, "temperature": self._hub._close_temp})
+        await self._hub._hass.services.async_call("climate", "turn_off", {"entity_id": self._hub._climate})
+        self.__attr_is_closed = True
+        self._attr_icon = "mdi:valve-closed"
+        self.schedule_update_ha_state()
 
     @property
     def unique_id(self):
@@ -50,7 +70,7 @@ class TRVValveEntity(Entity):
             "identifiers": {(DOMAIN, self.unique_id)},
             "name": NAME,
             "model": VERSION,
-            "manufacturer": NAME,
+            "manufacturer": MANUFACTURER,
         }
     
     async def async_added_to_hass(self):
@@ -58,44 +78,43 @@ class TRVValveEntity(Entity):
         # Sensors should also register callbacks to HA when their state changes
         self._hub.register_callback(self.async_write_ha_state)
 
+        # Listen for state changes of the climate entity
+        self._hub._hass.bus.async_listen(
+            "state_changed", self._async_climate_state_changed
+        )
+
+        # Set initial state according to the climate entity
+        climate_state = self._hub._hass.states.get(self._hub._climate)
+        if climate_state:
+            self._attr_is_closed = climate_state.state == "off"
+        else:
+            self._attr_is_closed = None
+
     async def async_will_remove_from_hass(self):
         """Entity being removed from hass."""
         # The opposite of async_added_to_hass. Remove any registered call backs here.
         self._hub.remove_callback(self.async_write_ha_state)
 
+        # Remove the listener for state changes of the climate entity
+        self._hub._hass.bus.async_remove_listener(
+            "state_changed", self._async_climate_state_changed
+        )
 
-class TRVValve(TRVValveEntity, ValveEntity):
+    async def _async_climate_state_changed(self, event):
+        """Handle climate state changes."""
+        if event.data.get("entity_id") != self._hub._climate:
+            return
 
-    should_poll = False
-    supported_features = ValveEntityFeature.OPEN | ValveEntityFeature.CLOSE
-    reports_position = False
-
-    async def async_open_valve(self) -> None:
-        climate_state = self._hub._hass.states.get(self._hub._climate)
-        if climate_state is not None and "manual" in climate_state.attributes.get("preset_modes", []):
-            await self._hub._hass.services.async_call("climate", "set_preset_mode", {"entity_id": self._climate, "preset_mode": "manual"})
-        await self._hub._hass.services.async_call("climate", "set_temperature", {"entity_id": self._hub._climate, "temperature": self._hub._open_temp})
-        await self._hub._hass.services.async_call("climate", "turn_on", {"entity_id": self._hub._climate})
-        self.__attr_is_closed = False
-        self._attr_icon = "mdi:valve-open"
-        self._attr_icon_color = "on"
-        self.schedule_update_ha_state()
-
-    async def async_close_valve(self) -> None:
-        climate_state = self._hub._hass.states.get(self._hub._climate)
-        if climate_state is not None and "manual" in climate_state.attributes.get("preset_modes", []):
-            await self._hub._hass.services.async_call("climate", "set_preset_mode", {"entity_id": self._climate, "preset_mode": "manual"})
-        await self._hub._hass.services.async_call("climate", "set_temperature", {"entity_id": self._hub._climate, "temperature": self._hub._close_temp})
-        await self._hub._hass.services.async_call("climate", "turn_off", {"entity_id": self._hub._climate})
-        self.__attr_is_closed = True
-        self._attr_icon = "mdi:valve-closed"
-        self._attr_icon_color = "red"
-        self.schedule_update_ha_state()
+        new_state = event.data.get("new_state")
+        if new_state:
+            self._attr_is_closed = new_state.state == "off"
+            self.schedule_update_ha_state()
 
     def __init__(self, hub) -> None:
         self._hub = hub
-        super().__init__(hub)
+        super().__init__()
 
         self._attr_name = hub._name
         self._attr_unique_id = f"trvvalve_{hub._climate}"
         self._attr_icon = "mdi:valve"
+

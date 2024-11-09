@@ -9,8 +9,6 @@ from homeassistant.core import HomeAssistant
 
 class Hub:
 
-    manufacturer = "Gume"
-
     def __init__(self, hass: HomeAssistant, name: str, climate: str, ot: float, ct: float) -> None:
         """Init dummy hub."""
         self._hass = hass
@@ -23,11 +21,10 @@ class Hub:
 
     @property
     def hub_id(self) -> str:
-        """ID for dummy hub."""
         return self._id
 
     def register_callback(self, callback: Callable[[], None]) -> None:
-        """Register callback, called when Roller changes state."""
+        """Register callback, called when Valve changes state."""
         self._callbacks.add(callback)
 
     def remove_callback(self, callback: Callable[[], None]) -> None:

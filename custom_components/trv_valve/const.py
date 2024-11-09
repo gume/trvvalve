@@ -5,7 +5,8 @@ from homeassistant.const import Platform
 NAME = "TRV valve"
 DOMAIN = "trv_valve"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.0.1"
+VERSION = "0.0.2"
+MANUFACTURER = "GumeSoft"
 
 ATTRIBUTION = "Data provided by http://jsonplaceholder.typicode.com/"
 ISSUE_URL = "https://github.com/gume/trv-valve/issues"
