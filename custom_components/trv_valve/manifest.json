@@ -6,5 +6,6 @@
   "dependencies": [],
   "config_flow": true,
   "codeowners": ["@gume"],
-  "requirements": []
+  "requirements": [],
+  "version": "0.0.1"
 }
