@@ -38,7 +38,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: HubConfigEntry) -> bool:
         hass.data.setdefault(DOMAIN, {})
         _LOGGER.info(STARTUP_MESSAGE)
 
-    _LOGGER.error(entry.data)
     entry.runtime_data = hub.Hub(hass,
         entry.data[CONF_NAME],
         entry.data[CONF_CLIMATE],
