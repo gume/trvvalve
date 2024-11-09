@@ -14,18 +14,10 @@
 [![Discord][discord-shield]][discord]
 [![Community Forum][forum-shield]][forum]
 
-**TO BE REMOVED: If you need help, as a developer, to use this custom component tempalte,
-please look at the [User Guide in the Cookiecutter documentation](https://cookiecutter-homeassistant-custom-component.readthedocs.io/en/stable/quickstart.html)**
 
-**This component will set up the following platforms.**
+**This component will set up the TRV Valve platform.**
 
-| Platform        | Description                                                               |
-| --------------- | ------------------------------------------------------------------------- |
-| `binary_sensor` | Show something `True` or `False`.                                         |
-| `sensor`        | Show info from TRV valve API. |
-| `switch`        | Switch something `True` or `False`.                                       |
-
-![example][exampleimg]
+TRV Valve is a valve device based on a TRV climate device. Climate interface can be ignored, and TRV is controlled by open/close. Useful if you would like to use your TRV as a valve only.
 
 ## Installation
 
@@ -37,26 +29,6 @@ please look at the [User Guide in the Cookiecutter documentation](https://cookie
 6. Restart Home Assistant
 7. In the HA UI go to "Configuration" -> "Integrations" click "+" and search for "TRV valve"
 
-Using your HA configuration directory (folder) as a starting point you should now also have this:
-
-```text
-custom_components/trv_valve/translations/en.json
-custom_components/trv_valve/translations/fr.json
-custom_components/trv_valve/translations/nb.json
-custom_components/trv_valve/translations/sensor.en.json
-custom_components/trv_valve/translations/sensor.fr.json
-custom_components/trv_valve/translations/sensor.nb.json
-custom_components/trv_valve/translations/sensor.nb.json
-custom_components/trv_valve/__init__.py
-custom_components/trv_valve/api.py
-custom_components/trv_valve/binary_sensor.py
-custom_components/trv_valve/config_flow.py
-custom_components/trv_valve/const.py
-custom_components/trv_valve/manifest.json
-custom_components/trv_valve/sensor.py
-custom_components/trv_valve/switch.py
-```
-
 ## Configuration is done in the UI
 
 <!---->
@@ -67,13 +39,10 @@ If you want to contribute to this please read the [Contribution guidelines](CONT
 
 ## Credits
 
-This project was generated from [@oncleben31](https://github.com/oncleben31)'s [Home Assistant Custom Component Cookiecutter](https://github.com/oncleben31/cookiecutter-homeassistant-custom-component) template.
-
-Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [integration_blueprint][integration_blueprint] template
+This project would have beed generated from cookicutter and integration blueprint, however they are unfortunately outdated. I wish they would update their software and I could give them credits.
 
 ---
 
-[integration_blueprint]: https://github.com/custom-components/integration_blueprint
 [black]: https://github.com/psf/black
 [black-shield]: https://img.shields.io/badge/code%20style-black-000000.svg?style=for-the-badge
 [buymecoffee]: https://www.buymeacoffee.com/gume
@@ -82,9 +51,8 @@ Code template was mainly taken from [@Ludeeus](https://github.com/ludeeus)'s [in
 [commits]: https://github.com/gume/trvvalve/commits/main
 [hacs]: https://hacs.xyz
 [hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
-[discord]: https://discord.gg/Qa5fW2R
+[discord]: https://discord.gg/weQmtaGj
 [discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
-[exampleimg]: example.png
 [forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
 [forum]: https://community.home-assistant.io/
 [license-shield]: https://img.shields.io/github/license/gume/trvvalve.svg?style=for-the-badge
