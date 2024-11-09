@@ -71,18 +71,22 @@ class TRVValve(TRVValveEntity, ValveEntity):
     reports_position = False
 
     async def async_open_valve(self) -> None:
-        await self._hub._hass.services.async_call("climate", "turn_on", {"entity_id": self._hub._climate})
-        #await self._hass.services.async_call("climate", "set_preset_mode", {"entity_id": self._climate, "preset_mode": "manual"})
+        climate_state = self._hub._hass.states.get(self._hub._climate)
+        if climate_state is not None and "manual" in climate_state.attributes.get("preset_modes", []):
+            await self._hub._hass.services.async_call("climate", "set_preset_mode", {"entity_id": self._climate, "preset_mode": "manual"})
         await self._hub._hass.services.async_call("climate", "set_temperature", {"entity_id": self._hub._climate, "temperature": self._hub._open_temp})
+        await self._hub._hass.services.async_call("climate", "turn_on", {"entity_id": self._hub._climate})
         self.__attr_is_closed = False
         self._attr_icon = "mdi:valve-open"
         self._attr_icon_color = "on"
         self.schedule_update_ha_state()
 
     async def async_close_valve(self) -> None:
-        await self._hub._hass.services.async_call("climate", "turn_on", {"entity_id": self._hub._climate})
-        #await self._hass.services.async_call("climate", "set_preset_mode", {"entity_id": self._climate, "preset_mode": "manual"})
+        climate_state = self._hub._hass.states.get(self._hub._climate)
+        if climate_state is not None and "manual" in climate_state.attributes.get("preset_modes", []):
+            await self._hub._hass.services.async_call("climate", "set_preset_mode", {"entity_id": self._climate, "preset_mode": "manual"})
         await self._hub._hass.services.async_call("climate", "set_temperature", {"entity_id": self._hub._climate, "temperature": self._hub._close_temp})
+        await self._hub._hass.services.async_call("climate", "turn_off", {"entity_id": self._hub._climate})
         self.__attr_is_closed = True
         self._attr_icon = "mdi:valve-closed"
         self._attr_icon_color = "red"
